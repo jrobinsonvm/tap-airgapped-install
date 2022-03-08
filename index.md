@@ -9,7 +9,7 @@ Inner Loop: The inner loop describes a developer’s local development environme
 
 Outer Loop: The outer loop describes the steps to deploy apps to production and maintain them over time. For example, on a cloud-native platform, the outer loop includes activities such as building container images, adding container security, and configuring continuous integration (CI) and continuous delivery (CD) pipelines.
 
-VMware Tanzu Application Platform provides development teams a pre-paved path to production to get code running on any Kubernetes enabling security and scale. It is an application aware platform that is modular so teams can customize it based on their organization’s preferences. (https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/index.html)
+VMware Tanzu Application Platform provides development teams a pre-paved path to production to get code running on any Kubernetes enabling security and scale. It is an application aware platform that is modular so teams can customize it based on their organization’s preferences. [Read more...](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/index.html)
 
 # Install TAP in an AirGapped TKG Cluster 
 
@@ -29,7 +29,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 export INSTALL_REGISTRY_USERNAME=username
 export INSTALL_REGISTRY_PASSWORD=YourPassword
 export INSTALL_REGISTRY_HOSTNAME=your-registry.yourdomain.com
-export TAP_VERSION=1.0.1
+export TAP_VERSION=1.0.0
 export tanzunet_username=username
 export tanzunet_password=password
 export tanzunet_registry=registry.tanzu.vmware.com
@@ -64,6 +64,15 @@ imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.co
 </br>
 
 ## From the Kubernetes cluster you wish to install TAP run the following commands.   
+
+### Please create a kubernetes secret with your registry's CA Cert if you plan to leverage a self signed cert with your Harbor registry.   The Kapp Controller will pick up the secret after bouncing the kapp-controller pod.   
+
+</br>
+#### Carvel Docs for creating K8s Secret with Cert data.   
+```
+https://carvel.dev/kapp-controller/docs/v0.32.0/controller-config/
+```
+
 
 ### Create a namespace to install TAP
 ```
