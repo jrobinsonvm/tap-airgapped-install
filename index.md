@@ -1,77 +1,345 @@
-## Tanzu Kubernetes Grid Service 
+## Tanzu Application Platform - UnOfficial AirGapped Install Guide  
 ### Quick & Dirty - Getting Started Guide
 
-The Tanzu Kubernetes Grid Service provides self-service lifecycle management of Tanzu Kubernetes clusters. You use the Tanzu Kubernetes Grid Service to create and manage Tanzu Kubernetes clusters in a declarative manner that is familiar to Kubernetes operators and developers.
+VMware Tanzu Application Platform is a modular, application-aware platform that provides a rich set of developer tooling and a prepaved path to production to build and deploy software quickly and securely on any compliant public cloud or on-premises Kubernetes cluster.
 
-vSphere with Tanzu transforms vSphere to a platform for running Kubernetes workloads natively on the hypervisor layer. When enabled on a vSphere cluster, vSphere with Tanzu provides the capability to run Kubernetes workloads directly on ESXi hosts and to create upstream Kubernetes clusters within dedicated resource pools. [Read more](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-4D0D375F-C001-4F1D-AAB1-1789C5577A94.html)
+Tanzu Application Platform simplifies workflows in both the inner loop and outer loop of Kubernetes-based app development:
 
+Inner Loop: The inner loop describes a developer’s local development environment where they code and test apps. The activities that take place in the inner loop include writing code, committing to a version control system, deploying to a development or staging environment, testing, and then making additional code changes.
 
-### Tanzu Kubernetes Grid Service General Architecture 
+Outer Loop: The outer loop describes the steps to deploy apps to production and maintain them over time. For example, on a cloud-native platform, the outer loop includes activities such as building container images, adding container security, and configuring continuous integration (CI) and continuous delivery (CD) pipelines.
 
+VMware Tanzu Application Platform provides development teams a pre-paved path to production to get code running on any Kubernetes enabling security and scale. It is an application aware platform that is modular so teams can customize it based on their organization’s preferences. (https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/index.html)
 
-![TKGS](https://raw.githubusercontent.com/jrobinsonvm/tkgs-quickstart/main/images/TKGS.png)
+# Install TAP in an AirGapped TKG Cluster 
 
+## Relocate TAP Image Bundle to a private registry location 
+### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
+</br>
 
+### Set environment variables for private registry 
+```
+export INSTALL_REGISTRY_USERNAME=username
+export INSTALL_REGISTRY_PASSWORD=YourPassword
+export INSTALL_REGISTRY_HOSTNAME=your-registry.yourdomain.com
+export TAP_VERSION=1.0.1
+export tanzunet_username=username
+export tanzunet_password=password
+export tanzunet_registry=registry.tanzu.vmware.com
 
-### Supervisor Cluster Architecture
-![supervisorcluster](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/images/GUID-FB8FF18C-165F-4DE7-A36B-39BD2A50EBEC-high.png)
+```
 
-A cluster that is enabled for vSphere with Tanzu is called a Supervisor Cluster. It runs on top of an SDDC layer that consists of ESXi for compute, NSX-T Data Center or vSphere networking, and vSAN or another shared storage solution. Shared storage is used for persistent volumes for vSphere Pods, VMs running inside the Supervisor Cluster, and pods in a Tanzu Kubernetes cluster. After a Supervisor Cluster is created, as a vSphere administrator you can create namespaces within the Supervisor Cluster that are called vSphere Namespaces. As a DevOps engineer, you can run workloads consisting of containers running inside vSphere Pods and create Tanzu Kubernetes clusters.
+### Ensure you are logged into both your private registry and the Tanzu Network Registry.  
 
+```
+docker login ${INSTALL_REGISTRY_HOSTNAME}
 
-### vSphere Namespace 
-![namespace](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/images/GUID-8ED85D0A-FFEF-438A-930C-B824AEDE0728-high.png)
-
-A vSphere Namespace sets the resource boundaries where vSphere Pods and Tanzu Kubernetes clusters created by using the Tanzu Kubernetes Grid Service can run. When initially created, the namespace has unlimited resources within the Supervisor Cluster. As a vSphere administrator, you can set limits for CPU, memory, storage, as well as the number of Kubernetes objects that can run within the namespace. A resource pool is created per each namespace in vSphere. Storage limitations are represented as storage quotas in Kubernetes.
-
-### vSphere Content Library
-A vSphere Content Library provides the virtual machine template used to create the Tanzu Kubernetes cluster nodes. For each Supervisor Cluster where you intend to deploy a Tanzu Kubernetes cluster, you must define a Subscribed Content Library object that sources the OVA used by the Tanzu Kubernetes Grid Service to build cluster nodes. The same Subscribed Content Library can be configured for multiple Supervisor Clusters. There is no relationship between the Subscribed Content Library and the vSphere Namespace. The Subscribed Content Library downloads the latest templates directly from VMware. You upload the OVA templates you want to use to a Local Content Library.
-
-
-### Tanzu Kubernetes Grid Cluster Architecture 
-![tkc](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/images/GUID-389BC19D-1AC5-4F1E-9055-2B8903AFC342-high.png)
-
-A Tanzu Kubernetes cluster is a full distribution of the open-source Kubernetes software that is packaged, signed, and supported by VMware. In the context of vSphere with Tanzu, you can use the Tanzu Kubernetes Grid Service to provision Tanzu Kubernetes clusters on the Supervisor Cluster. You can invoke the Tanzu Kubernetes Grid Service API declaratively by using kubectl and a YAML definition.
-
-A Tanzu Kubernetes cluster resides in a vSphere Namespace. You can deploy workloads and services to Tanzu Kubernetes clusters the same way and by using the same tools as you would with standard Kubernetes clusters.
-
-
-
-### What are my vSphere with Tanzu Networking Options?
-
-A Supervisor Cluster can either use the vSphere networking stack or VMware NSX-T™ Data Center to provide connectivity to Kubernetes control plane VMs, services, and workloads. The networking used for Tanzu Kubernetes clusters provisioned by the Tanzu Kubernetes Grid Service is a combination of the fabric that underlies the vSphere with Tanzu infrastructure and open-source software that provides networking for cluster pods, services, and ingress.
+docker login ${tanzunet_registry} 
+```
 
 
 
-### Supervisor Cluster Networking with NSX-T Data Center ( Our Focus) 
+### Copy and save image bundle as a tarball using imgpkg
+```
+imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:$TAP_VERSION --to-tar /tmp/tap-imagebundle.tar
+```
 
-VMware NSX-T Data Center™ provides network connectivity to the objects inside the Supervisor Cluster and external networks. Connectivity to the ESXi hosts comprising the cluster is handled by the standard vSphere networks.
+### Push tarball to private registry 
+```
+imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.com/tap/tap-packages
+```
 
-You can also configure the Supervisor Cluster networking manually by using an existing NSX-T Data Center deployment or by deploying a new instance of NSX-T Data Center.
+</br>
 
+## From the Kubernetes cluster you wish to install TAP run the following commands.   
 
-![nsx-t](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/images/GUID-3ACAC5F4-AC41-4602-A648-E4D02449B7BA-high.png)
-
-
-- NSX Container Plug-in (NCP) provides integration between NSX-T Data Center and Kubernetes. The main component of NCP runs in a container and communicates with NSX Manager and with the Kubernetes control plane. NCP monitors changes to containers and other resources and manages networking resources such as logical ports, segments, routers, and security groups for the containers by calling the NSX API.   The NCP creates one shared tier-1 gateway for system namespaces and a tier-1 gateway and load balancer for each namespace, by default. The tier-1 gateway is connected to the tier-0 gateway and a default segment.   System namespaces are namespaces that are used by the core components that are integral to functioning of the supervisor cluster and Tanzu Kubernetes. The shared network resources that include the tier-1 gateway, load balancer, and SNAT IP are grouped in a system namespace.
-
-- NSX Edge provides connectivity from external networks to Supervisor Cluster objects. The NSX Edge cluster has a load balancer that provides a redundancy to the Kubernetes API servers residing on the control plane VMs and any application that must be published and be accessible from outside the Supervisor Cluster.
-
-- A tier-0 gateway is associated with the NSX Edge cluster to provide routing to the external network. The uplink interface uses either the dynamic routing protocol, BGP, or static routing.
-
-- Each vSphere Namespace has a separate network and set of networking resources shared by applications inside the namespace such as, tier-1 gateway, load balancer service, and SNAT IP address.
-
-- Workloads running in Sphere Pods, regular VMs, or Tanzu Kubernetes clusters, that are in the same namespace, share a same SNAT IP for North-South connectivity.
-Workloads running in Sphere Pods or Tanzu Kubernetes clusters will have the same isolation rule that is implemented by the default firewall.
-
-- A separate SNAT IP is not required for each Kubernetes namespace. East west connectivity between namespaces will be no SNAT.
-
-- The segments for each namespace reside on the vSphere Distributed Switch (VDS) functioning in Standard mode that is associated with the NSX Edge cluster. The segment provides an overlay network to the Supervisor Cluster.
-
-- Supervisor clusters have separate segments within the shared tier-1 gateway. For each Tanzu Kubernetes cluster, segments are defined within the tier-1 gateway of the namespace.
-
-- The Spherelet processes on each ESXi hosts communicate with vCenter Server through an interface on the Management Network.
+### Create a namespace to install TAP
+```
+kubectl create ns tap-install
+```
+</br>
 
 
+### Create a Kubernetes secret for your private registry and export to all namespaces using the Tanzu CLI 
 
+
+```
+tanzu secret registry add tap-registry \
+  --username ${INSTALL_REGISTRY_USERNAME} --password ${INSTALL_REGISTRY_PASSWORD} \
+  --server ${INSTALL_REGISTRY_HOSTNAME} \
+  --export-to-all-namespaces --yes --namespace tap-install
+```
+
+### Add the Tanzu Application Platform Repository using the Tanzu CLI 
+```
+  tanzu package repository add tanzu-tap-repository \
+  --url your-registry.yourdomain.com/tap/tap-packages:$TAP_VERSION \
+  --namespace tap-install
+```
+
+</br>
+
+### Navigate to the Tanzu Network and download a sample backstage catalog.  
+####  Please upload to your git repository of choice for later use.   
+
+</br>
+
+[Direct Link to Tanzu Network - TAP Example Catalog](https://network.pivotal.io/products/tanzu-application-platform#/releases/1059919/file_groups/6091) 
+
+</br>
+
+#### Create a secret for your git ssh key for gitops 
+#### Disregard if you do not wish to use gitops 
+#### The example below assumes your key is located in ~/.ssh
+```
+kubectl create secret generic git-ssh  --from-file=id_rsa=/Users/username/.ssh/id_rsa.pub
+```
+</br>
+
+### Create a file called tap-values.yml and add the following content.   
+#### Edits will need to be made to match your environment.   
+
+
+```
+profile: full
+ceip_policy_disclosed: true # The value must be true for installation to succeed
+buildservice:
+  kp_default_repository: "your-registry.com/tap/build-service"
+  kp_default_repository_username: "yourUserName"
+  kp_default_repository_password: "yourPassword"
+  tanzunet_username: "youremail@email.com"
+  tanzunet_password: "yourTanzuNetPassword"
+  descriptor_name: "tap-1.0.0-full"
+  enable_automatic_dependency_updates: true
+supply_chain: basic
+
+contour:
+  envoy:
+    service:
+      type: LoadBalancer
+
+cnrs:
+  domain_name: tap.yourDomain.com
+  
+ootb_supply_chain_basic:
+  registry:
+    server: "your-registry.yourDomain.com"
+    repository: "tap-demo"
+  git_ops:
+    ssh_secret: "git-ssh"
+  cluster_builder: default
+  service_account: default
+
+learningcenter:
+  ingressDomain: "tap.yourDomain.com"
+
+tap_gui:
+  service_type: LoadBalancer
+  ingressEnabled: "true"
+  ingressDomain: "tap.yourDomain.com"
+  app_config:
+    app:
+      baseUrl: http://tap-gui.tap.yourDomain.com:7000
+    integrations:
+      github: # Other integrations available see official docs 
+        - host: github.com
+          token: ""
+    catalog:
+      locations:
+        - type: url
+          target: https://github.com/your-gitscm-username/your-catalog-repo/blob/main/catalog-info.yaml # Replace this
+    backend:
+      baseUrl: http://tap-gui.tap.yourDomain.com:7000
+      cors:
+        origin: http://tap-gui.tap.yourDomain.com:7000
+
+metadata_store:
+  app_service_type: LoadBalancer # (optional) Defaults to LoadBalancer. Change to NodePort for distributions that don't support LoadBalancer
+
+grype:
+  namespace: "default" # (optional) Defaults to default namespace.
+  targetImagePullSecret: "tap-registry"
+
+```
+
+
+
+### Install Tanzu Application Platform 
+```
+tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file tap-values.yml -n tap-install
+```
+
+<!-- 
+```
+tanzu package installed update tap \
+ --package-name tap.tanzu.vmware.com \
+ --version 1.0.1 -n tap-install \
+ -f tap-values.yml
+``` -->
+
+
+
+
+## Before running any workloads you will need to setup a developer namespace.   
+
+
+### Create the namespace if its not already created 
+```
+kubectl create ns dev-namespace-1
+```
+
+
+### Create a kubernetes secret for the registry you wish to use with your developer namespace.   
+
+```
+kubectl create secret docker-registry registry-credentials --docker-server=your-registry.yourdomain.com --docker-username=username --docker-password=YourPassword -n dev-namespace-1
+```
+
+
+### Run the following to setup proper roles and service account permissions 
+```
+cat <<EOF | kubectl -n dev-namespace-1 apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tap-registry
+  annotations:
+    secretgen.carvel.dev/image-pull-secret: ""
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: e30K
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+secrets:
+  - name: registry-credentials
+imagePullSecrets:
+  - name: registry-credentials
+  - name: tap-registry
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: default
+rules:
+- apiGroups: [source.toolkit.fluxcd.io]
+  resources: [gitrepositories]
+  verbs: ['*']
+- apiGroups: [source.apps.tanzu.vmware.com]
+  resources: [imagerepositories]
+  verbs: ['*']
+- apiGroups: [carto.run]
+  resources: [deliverables, runnables]
+  verbs: ['*']
+- apiGroups: [kpack.io]
+  resources: [images]
+  verbs: ['*']
+- apiGroups: [conventions.apps.tanzu.vmware.com]
+  resources: [podintents]
+  verbs: ['*']
+- apiGroups: [""]
+  resources: ['configmaps']
+  verbs: ['*']
+- apiGroups: [""]
+  resources: ['pods']
+  verbs: ['list']
+- apiGroups: [tekton.dev]
+  resources: [taskruns, pipelineruns]
+  verbs: ['*']
+- apiGroups: [tekton.dev]
+  resources: [pipelines]
+  verbs: ['list']
+- apiGroups: [kappctrl.k14s.io]
+  resources: [apps]
+  verbs: ['*']
+- apiGroups: [serving.knative.dev]
+  resources: ['services']
+  verbs: ['*']
+- apiGroups: [servicebinding.io]
+  resources: ['servicebindings']
+  verbs: ['*']
+- apiGroups: [services.apps.tanzu.vmware.com]
+  resources: ['resourceclaims']
+  verbs: ['*']
+- apiGroups: [scanning.apps.tanzu.vmware.com]
+  resources: ['imagescans', 'sourcescans']
+  verbs: ['*']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: default
+subjects:
+  - kind: ServiceAccount
+    name: default
+EOF
+
+```
+
+
+### Now you are ready to run some workloads
+</br>
+
+#### But first take a look at the Supply Chain you will be using.
+```
+tanzu apps cluster-supply-chain list
+```
+
+</br>
+
+### Now try kicking off the following example workload deployment 
+
+####  Since you are running in an air-gapped environment you may need to copy and push the git repo below to your internal git repository.   
+
+</br> 
+https://github.com/sample-accelerators/tanzu-java-web-app
+
+</br>
+
+```
+tanzu apps workload create java-web \
+--git-repo https://github.com/sample-accelerators/tanzu-java-web-app \
+--git-branch main \
+--type web \
+--label app.kubernetes.io/part-of=tanzu-java-web-app \
+--label tanzu.app.live.view="true" \
+--label tanzu.app.live.view.application.name="java-web" 
+```
+
+<!-- ```
+tanzu apps workload create pet \
+--git-repo https://github.com/jrobinsonvm/spring-petclinic.git \
+--git-branch main \
+--type web \
+--label app.kubernetes.io/part-of=tanzu-test \
+--label tanzu.app.live.view="true" \
+--label tanzu.app.live.view.application.name="petsclinc" \ 
+--yes
+``` -->
+
+
+### Check deployed apps / Workloads 
+```
+tanzu apps workload list
+```
+
+</br>
+
+
+## To make updates or changes to your TAP Installation (tap-values.yml) run the following command.   
+
+```
+tanzu package installed update tap \
+ --package-name tap.tanzu.vmware.com \
+ --version 1.0.1 -n tap-install \
+ -f tap-values.yml
+ ```
+
+ 
 For more details see the offical [vSphere with Tanzu Docs](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-152BE7D2-E227-4DAA-B527-557B564D9718.html).
