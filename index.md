@@ -13,6 +13,13 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 # Install TAP in an AirGapped TKG Cluster 
 
+
+
+## First install the Tanzu CLI 
+#### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
+
+
+
 ## Relocate TAP Image Bundle to a private registry location 
 ### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
 </br>
@@ -44,10 +51,15 @@ docker login ${tanzunet_registry}
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:$TAP_VERSION --to-tar /tmp/tap-imagebundle.tar
 ```
 
-### Push tarball to private registry 
+
+### Now transfer the tarball to a device which has access to your private registry.   
+
+
+### Push the tarball to your private registry 
 ```
-imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.com/tap/tap-packages
+imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.com/tap/tap-packages --registry-verify-certs=false
 ```
+
 
 </br>
 
@@ -340,6 +352,5 @@ tanzu package installed update tap \
  --version 1.0.1 -n tap-install \
  -f tap-values.yml
  ```
-
  
-For more details see the offical [vSphere with Tanzu Docs](https://docs.vmware.com/en/VMware-vSphere/7.0/vmware-vsphere-with-tanzu/GUID-152BE7D2-E227-4DAA-B527-557B564D9718.html).
+For more details see the offical [Tanzu Application Platform](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/index.html)
