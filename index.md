@@ -18,7 +18,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 ## First install the Tanzu CLI 
 #### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
 
-</br> 
+</p>
 
 ## Next, please install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
 ### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
@@ -26,12 +26,12 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 
 
-</br>
+</p>
 
 ## Relocate TAP Image Bundle to a private registry location 
 ### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
 
-</br>
+</p>
 
 ### Set environment variables for private registry 
 ```
