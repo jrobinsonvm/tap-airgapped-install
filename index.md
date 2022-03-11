@@ -350,9 +350,9 @@ tanzu apps cluster-supply-chain list
 
 ####  Since you are running in an air-gapped environment you may need to copy and push the git repo below to your internal git repository.   
 
-<br/>
-
+```
 https://github.com/sample-accelerators/tanzu-java-web-app
+```
 
 <br/>
 
