@@ -13,27 +13,28 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 # Install TAP in an AirGapped TKG Cluster 
 
-
-
-## First install the Tanzu CLI 
-#### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
-
-</p>
-
-## Next, please install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
-### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
-#### [Please follow the Official Docs for the Cluster Essentials Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#tanzu-cluster-essentials)
-
-
+> 
+> ### Pre-requisites 
+> #### 1. Install the Tanzu CLI 
+> ##### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
 
 </p>
 
-## Relocate TAP Image Bundle to a private registry location 
-### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
+> #### 2. Only Install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
+> #### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
+> ##### [Please follow the Official Docs for the Cluster Essentials Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#tanzu-cluster-essentials)
+
+
 
 </p>
 
-### Set environment variables for private registry 
+### Relocate TAP Image Bundle to a private registry location 
+#### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
+
+</p>
+
+#### Set environment variables for private registry 
+
 ```
 export INSTALL_REGISTRY_USERNAME=username
 export INSTALL_REGISTRY_PASSWORD=YourPassword
