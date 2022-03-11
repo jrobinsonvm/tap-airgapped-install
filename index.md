@@ -31,7 +31,6 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 
 
-
 -----------------------------------------------------------------------------------------------------------------------------------
 
 ### Relocate TAP Image Bundle to a private registry location 
@@ -129,8 +128,6 @@ tanzu secret registry add tap-registry \
 
 ----
 
-
-
 [Direct Link to Tanzu Network - TAP Example Catalog](https://network.pivotal.io/products/tanzu-application-platform#/releases/1059919/file_groups/6091) 
 
 ----
@@ -214,6 +211,7 @@ grype:
 
 
 ### Install Tanzu Application Platform 
+
 ```
 tanzu package install tap -p tap.tanzu.vmware.com -v $TAP_VERSION --values-file tap-values.yml -n tap-install
 ```
