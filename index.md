@@ -30,6 +30,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 ##### [Please follow the Official Docs for the Cluster Essentials Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#tanzu-cluster-essentials)
 
 
+<br/>
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -78,6 +79,7 @@ imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.co
 
 
 
+<br/>
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -119,6 +121,7 @@ tanzu secret registry add tap-registry \
   --namespace tap-install
 ```
 
+<br/>
 
 ------------
 
