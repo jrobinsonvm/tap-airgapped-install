@@ -21,7 +21,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
  
 ##### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
 
-</br>
+<br/>
 
 #### Install Carvel CLI Tools 
 #####  [Download and Setup Carvel.dev CLI Tools ](https://carvel.dev/)
