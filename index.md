@@ -55,21 +55,21 @@ docker login ${tanzunet_registry}
 
 
 ### Copy and save image bundle as a tarball using imgpkg
+#### After the tarball has been created transfer the tarball to a device which has access to your private registry.   
+
 ```
 imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages:$TAP_VERSION --to-tar /tmp/tap-imagebundle.tar
 ```
 
+### Once that tarball has been transferred to a device which has access to your private registry, push the tarball to your registry.  
 
-### Now transfer the tarball to a device which has access to your private registry.   
-
-
-### Push the tarball to your private registry 
 ```
 imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.com/tap/tap-packages --registry-verify-certs=false
 ```
 
 
 </br>
+-----------------------------------------------------------------------------------------------------------------------------------
 
 ## From the Kubernetes cluster you wish to install TAP run the following commands.   
 
