@@ -13,20 +13,21 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 # Install TAP in an AirGapped TKG Cluster 
 
- ### Pre-requisites 
+### Pre-requisites 
+ 
  -------
  
- #### Install the Tanzu CLI 
+#### Install the Tanzu CLI 
  
- ##### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
+##### [Please follow the Official Docs for the Tanzu CLI Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#linux-tanzu-cli)
 
 </p>
 
- #### Only Install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
+#### Only Install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
  
- #### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
+#### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
  
- ##### [Please follow the Official Docs for the Cluster Essentials Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#tanzu-cluster-essentials)
+##### [Please follow the Official Docs for the Cluster Essentials Install](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-install-tanzu-cli.html#tanzu-cluster-essentials)
 
 </p>
 
