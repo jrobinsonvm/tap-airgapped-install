@@ -336,23 +336,25 @@ EOF
 
 
 ### Now you are ready to run some workloads
-</br>
+
+<br/>
 
 #### But first take a look at the Supply Chain you will be using.
 ```
 tanzu apps cluster-supply-chain list
 ```
 
-</br>
+<br/>
 
 ### Now try kicking off the following example workload deployment 
 
 ####  Since you are running in an air-gapped environment you may need to copy and push the git repo below to your internal git repository.   
 
-</br> 
+<br/>
+
 https://github.com/sample-accelerators/tanzu-java-web-app
 
-</br>
+<br/>
 
 ```
 tanzu apps workload create java-web \
@@ -381,7 +383,8 @@ tanzu apps workload create pet \
 tanzu apps workload list
 ```
 
-</br>
+
+<br/>
 
 
 ## To make updates or changes to your TAP Installation (tap-values.yml) run the following command.   
