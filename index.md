@@ -30,6 +30,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 ## Relocate TAP Image Bundle to a private registry location 
 ### From a device with connectivity to the internet run the following commmand to copy the image bundle and create a tarball
+
 </br>
 
 ### Set environment variables for private registry 
