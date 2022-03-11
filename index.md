@@ -25,22 +25,27 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 #### Install Carvel CLI Tools 
 #####  [Download and Setup Carvel.dev CLI Tools ](https://carvel.dev/)
-> ##### Install Via script (macOS or Linux)
-> wget -O- https://carvel.dev/install.sh | bash
+> #### Install Via script (macOS or Linux)
+```
+wget -O- https://carvel.dev/install.sh | bash
+```
 >
 > #### or with curl...
-> curl -L https://carvel.dev/install.sh | bash
+```
+curl -L https://carvel.dev/install.sh | bash
+```
 >
 > #### or Via Homebrew (macOS or Linux)
 > Based on github.com/vmware-tanzu/homebrew-carvel.
 >
-> brew tap vmware-tanzu/carvel
-> brew install ytt kbld kapp imgpkg kwt vendir
+```
+brew tap vmware-tanzu/carvel
+brew install ytt kbld kapp imgpkg kwt vendir
+```
+
+<br/>
 
 
-
-----
- 
 #### Only Install Cluster Essentials if you are not using TKGM (Tanzu Kubernetes Grid Multi-Cloud).  
  
 #### EKS, AKS, GKE and TKGS all require Cluster Essentials to be installed.   
