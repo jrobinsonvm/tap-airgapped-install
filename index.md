@@ -13,7 +13,7 @@ VMware Tanzu Application Platform provides development teams a pre-paved path to
 
 # Install TAP in an AirGapped TKG Cluster 
 
-### Pre-requisites 
+## Pre-requisites 
  
  -------
  
@@ -123,8 +123,6 @@ tanzu secret registry add tap-registry \
 
 <br/>
 
-------------
-
 
 ### Navigate to the Tanzu Network and download a sample backstage catalog.  
 ####  Please upload to your git repository of choice for later use.   
@@ -136,13 +134,14 @@ tanzu secret registry add tap-registry \
 ----
 
 
+### Create a k8s secret that includes your git ssh key for gitops 
 
-#### Create a secret for your git ssh key for gitops 
 #### Disregard if you do not wish to use gitops 
 #### The example below assumes your key is located in ~/.ssh
 
 ```
-kubectl create secret generic git-ssh  --from-file=id_rsa=/Users/username/.ssh/id_rsa.pub
+kubectl create secret generic git-ssh     --from-file=./id_rsa     --from-file=./id_rsa.pub     --from-file=./known_hosts
+
 ```
 
 ### Create a file called tap-values.yml and add the following content.   
@@ -228,12 +227,15 @@ tanzu package installed update tap \
 ``` -->
 
 
+<br/>
+
+-----------------------------------------------------------------------------------------------------------------------------------
 
 
 ## Before running any workloads you will need to setup a developer namespace.   
 
-
 ### Create the namespace if its not already created 
+
 ```
 kubectl create ns dev-namespace-1
 ```
