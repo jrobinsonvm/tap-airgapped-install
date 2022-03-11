@@ -77,7 +77,8 @@ imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.co
 ```
 
 
-</br>
+
+
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
@@ -85,8 +86,11 @@ imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.co
 
 ### Please create a kubernetes secret with your registry's CA Cert if you plan to leverage a self signed cert with your Harbor registry.   The Kapp Controller will pick up the secret after bouncing the kapp-controller pod.   
 
-</br>
+
+
+
 #### Carvel Docs for creating K8s Secret with Cert data.   
+
 ```
 https://carvel.dev/kapp-controller/docs/v0.32.0/controller-config/
 ```
@@ -96,7 +100,7 @@ https://carvel.dev/kapp-controller/docs/v0.32.0/controller-config/
 ```
 kubectl create ns tap-install
 ```
-</br>
+
 
 
 ### Create a Kubernetes secret for your private registry and export to all namespaces using the Tanzu CLI 
@@ -116,7 +120,8 @@ tanzu secret registry add tap-registry \
   --namespace tap-install
 ```
 
-</br>
+
+
 
 ### Navigate to the Tanzu Network and download a sample backstage catalog.  
 ####  Please upload to your git repository of choice for later use.   
