@@ -121,24 +121,29 @@ tanzu secret registry add tap-registry \
 ```
 
 
+------------
 
 
 ### Navigate to the Tanzu Network and download a sample backstage catalog.  
 ####  Please upload to your git repository of choice for later use.   
 
-</br>
+----
+
+
 
 [Direct Link to Tanzu Network - TAP Example Catalog](https://network.pivotal.io/products/tanzu-application-platform#/releases/1059919/file_groups/6091) 
 
-</br>
+----
+
+
 
 #### Create a secret for your git ssh key for gitops 
 #### Disregard if you do not wish to use gitops 
 #### The example below assumes your key is located in ~/.ssh
+
 ```
 kubectl create secret generic git-ssh  --from-file=id_rsa=/Users/username/.ssh/id_rsa.pub
 ```
-</br>
 
 ### Create a file called tap-values.yml and add the following content.   
 #### Edits will need to be made to match your environment.   
