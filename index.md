@@ -388,8 +388,9 @@ tanzu apps workload list
 
 <br/>
 
+-------------
 
-## To make updates or changes to your TAP Installation (tap-values.yml) run the following command.   
+### To make updates or changes to your TAP Installation (tap-values.yml) run the following command.   
 
 ```
 tanzu package installed update tap \
