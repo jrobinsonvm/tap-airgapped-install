@@ -356,6 +356,8 @@ https://github.com/sample-accelerators/tanzu-java-web-app
 
 <br/>
 
+### Deploy the following workload 
+
 ```
 tanzu apps workload create java-web \
 --git-repo https://github.com/sample-accelerators/tanzu-java-web-app \
