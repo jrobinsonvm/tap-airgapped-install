@@ -422,4 +422,42 @@ tanzu package installed update tap \
  -f tap-values.yml
  ```
  
+ 
+<!--  
+ ## Let's now leverage one of our out of the box testing and scanning supply chains
+
+```
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: developer-defined-tekton-pipeline
+  labels:
+    apps.tanzu.vmware.com/pipeline: test      # (!) required
+spec:
+  params:
+    - name: source-url                        # (!) required
+    - name: source-revision                   # (!) required
+  tasks:
+    - name: test
+      params:
+        - name: source-url
+          value: $(params.source-url)
+        - name: source-revision
+          value: $(params.source-revision)
+      taskSpec:
+        params:
+          - name: source-url
+          - name: source-revision
+        steps:
+          - name: test
+            image: gradle
+            script: |-
+              cd `mktemp -d`
+              wget -qO- $(params.source-url) | tar xvz -m
+              ./mvnw test
+```
+ -->
+
+
+ 
 For more details see the offical [Tanzu Application Platform](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/index.html)
