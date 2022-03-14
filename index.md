@@ -277,7 +277,7 @@ cat <<EOF | kubectl -n dev-namespace-1 apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tap-registry
+  name: registry-credentials
   annotations:
     secretgen.carvel.dev/image-pull-secret: ""
 type: kubernetes.io/dockerconfigjson
