@@ -173,6 +173,8 @@ kubectl create secret generic git-ssh     --from-file=./id_rsa     --from-file=.
 
 ```
 profile: full
+excluded_packages:
+  - buildservice.tanzu.vmware.com
 ceip_policy_disclosed: true # The value must be true for installation to succeed
 buildservice:
   kp_default_repository: "your-registry.com/tap/build-service"
@@ -328,6 +330,52 @@ ca_cert_data: <CA_CERT_CONTENTS>
 #### Run the following command to install TBS.   
 ```
 tanzu package install tbs -p buildservice.tanzu.vmware.com -v $TBS_VERSION -n tbs-install -f tbs-values.yml
+```
+
+
+#### Now run the following command to package tbs-dependencies as a tarball
+```
+docker login registry.tanzu.vmware.com
+
+imgpkg copy -b registry.tanzu.vmware.com/tbs-dependencies/full:100.0.282 \
+  --to-tar=tbs-dependencies.tar
+
+```
+
+#### Now push the tarball bundle to your private registry 
+
+```
+docker login <build-service-registry>
+
+imgpkg copy --tar=tbs-dependencies.tar \
+  --to-repo $INSTALL_REPOSITORY
+```
+
+
+#### Finally let's install our tbs-dependencies  
+
+```
+imgpkg pull -b $INSTALL_REPOSITORY:1.4.3 \
+  -o /tmp/descriptor-bundle \
+  --registry-ca-cert-path <PATH-TO-CA>
+```
+
+#### From your machine navigate to the 1.4.3.yaml file and change the image listed to match your private harbor image url.  
+```
+File location: /tmp/descriptor-bundle/packages/buildservice.tanzu.vmware.com/1.4.3.yml
+```
+
+#### You will also need to chanage the API Version to match the following 
+```
+apiVersion: kp.kpack.io/v1alpha1
+```
+
+#### Save the file.   
+
+```
+kbld -f /tmp/descriptor-bundle/.imgpkg/images.yml \
+  -f /tmp/descriptor-bundle/packages/buildservice.tanzu.vmware.com/1.4.3.yml \
+  | kp import -f -
 ```
 
 
