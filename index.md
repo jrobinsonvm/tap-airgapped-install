@@ -69,7 +69,7 @@ brew install ytt kbld kapp imgpkg kwt vendir
 export INSTALL_REGISTRY_USERNAME=username
 export INSTALL_REGISTRY_PASSWORD=YourPassword
 export INSTALL_REGISTRY_HOSTNAME=your-registry.yourdomain.com
-export TAP_VERSION=1.0.1
+export TAP_VERSION=1.0.2
 export tanzunet_username=username
 export tanzunet_password=password
 export tanzunet_registry=registry.tanzu.vmware.com
