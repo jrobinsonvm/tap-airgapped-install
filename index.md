@@ -254,6 +254,82 @@ tanzu package installed update tap \
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
+## Install AirGapped TBS 
+
+### Set up environment variables for use during the installation.
+
+```
+export INSTALL_REGISTRY_HOSTNAME=<IMAGE-REGISTRY>
+export INSTALL_REPOSITORY=<IMAGE-REPOSITORY>
+export INSTALL_REGISTRY_USERNAME=<REGISTRY-USERNAME>
+export INSTALL_REGISTRY_PASSWORD=<REGISTRY-PASSWORD>
+export TBS_VERSION=1.4.3
+```
+
+
+
+###  Relocate Images to a Registry (Air-Gapped)
+
+#### First login to the tanzu registry 
+```
+docker login registry.tanzu.vmware.com
+```
+
+#### Now package images as a tarball 
+```
+imgpkg copy -b registry.tanzu.vmware.com/build-service/package-repo:$TBS_VERSION --to-tar=/tmp/tanzu-build-service.tar
+```
+
+
+#### Login to your private registry 
+```
+docker login ${INSTALL_REGISTRY_HOSTNAME}
+```
+
+#### Copy the images from your local machine to the internal registry 
+
+```
+imgpkg copy --tar /tmp/tanzu-build-service.tar \
+  --to-repo=${INSTALL_REPOSITORY} \
+  --registry-ca-cert-path <PATH-TO-CA>
+```
+
+#### Now create a namespace for TBS Airgapped Install 
+
+```
+kubectl create ns tbs-install
+```
+
+#### Add the TBS Repository 
+```
+tanzu package repository add tbs-repository \
+   --url "${INSTALL_REPOSITORY}:${TBS_VERSION}" \
+   --namespace tbs-install
+```
+
+#### Run the following command to verify 
+
+```
+tanzu package repository get tbs-repository --namespace tbs-install
+```
+
+
+#### Create a tbs-values.yml file with the following contents 
+
+```
+---
+kp_default_repository: $INSTALL_REPOSITORY
+kp_default_repository_username: $INSTALL_REGISTRY_USERNAME
+kp_default_repository_password: $INSTALL_REGISTRY_PASSWORD
+pull_from_kp_default_repo: true
+ca_cert_data: <CA_CERT_CONTENTS>
+```
+
+#### Run the following command to install TBS.   
+```
+tanzu package install tbs -p buildservice.tanzu.vmware.com -v $TBS_VERSION -n tbs-install -f tbs-values.yml
+```
+
 
 ## Before running any workloads you will need to setup a developer namespace.   
 
