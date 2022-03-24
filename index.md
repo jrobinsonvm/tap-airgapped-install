@@ -173,17 +173,48 @@ kubectl create secret generic git-ssh     --from-file=./id_rsa     --from-file=.
 
 ```
 profile: full
-excluded_packages:
-  - buildservice.tanzu.vmware.com
 ceip_policy_disclosed: true # The value must be true for installation to succeed
 buildservice:
-  kp_default_repository: "your-registry.com/tap/build-service"
-  kp_default_repository_username: "yourUserName"
-  kp_default_repository_password: "yourPassword"
-  tanzunet_username: "youremail@email.com"
-  tanzunet_password: "yourTanzuNetPassword"
+  kp_default_repository: "private-registry.com/tap/build-service-airgapped"
+  kp_default_repository_username: "username"
+  kp_default_repository_password: "xxxxxxxxxxx"
+  ca_cert_data: |
+    -----BEGIN CERTIFICATE-----
+    MIIF2zCCA8OgAwIBAgIUFx8Okxpb45EjI8owci2kQkdGPEwwDQYJKoZIhvcNAQEN
+    REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+    MQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAwBgNVBAMMKW5vc3NsLmhh
+    cmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29tMB4XDTIyMDMwODE0MzU0
+    NVoXDTMyMDMwNTE0MzU0NVowfTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk5DMRAw
+    DgYDVQQHDAdSYWxlaWdoMQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAw
+    BgNVBAMMKW5vc3NsLmhhcmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29t
+    MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAw3Eaetb6AdjzDyUDJD7S
+    HmAjsU9kaPln9HPHzNCLQRuYu6P1KGjtchfqeYfFGYVS+BHFBfTNHrOr1ixiTUjB
+    REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+    mz2EuatgF+HL9f3hib7Kb7EdR38J0qA0UbJFvFIRG6JwUhBAoA8ALgEPXFjpssa7
+    ac4N47jJQNPafWgdm164E7b3oMbcti1uKquMrzZyX+nFnUURhFqyO/GYIga4nbsp
+    IEikHs3sXHSCVlAB7wqVaLE1fmAkrgtimRk0TWfdA4flMjadxS29HKaMMFCLMiXh
+    BM0rakQeVs1AYWc8H5gNnHxzXvft6pGiBTsZtj9W8DcjmibMA8P9O0hDzF3yF+08
+    qNb75/wEwfQBW4E/5ifAxgYj8DZ/3n+eeNmlWZphEWfqeppzenbW7qk/3O5Kts17
+    SfLy7AoWzYCudw4rUG0cLoqIihgz+xqL/EYTb/Puvk2/3eiUGJ/q67+4h8AqaLwZ
+    67JJkZXbAeU9j/C+mgjnBlk9Qv62ye9iZJIGnG5kPIzMz/pp0iz+toWCABLhIAJj
+    uvEFW7RIitqM2Mn5U7Ue2hOSqb5qpV3TnQXJ6RVq1CxxO3lSw4AvFGa87GxV5EBA
+    REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+    IIVkc1x8iJ0oMB8GA1UdIwQYMBaAFIQVhH/MATwbOWk5IIVkc1x8iJ0oMA8GA1Ud
+    EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQENBQADggIBAGEZ6JqzCByT5mbG8sRxDvEe
+    9A6kbDlNtBwMlxekReLG/NMR8xpWB0DtTdbVcpdDgZ7Sw8MZKWdgWtQU2OHiIioT
+    Ffczar0AcakYVCOCy3XLSm1+SFJYbd7VNw05hfQo4o7iZynamztoXOToQTinMQVw
+    gCiJebDy1EJnZwmPfVwKpjt1lEUKbCT9R+lnFgP2be58kGKbMI2l5/wYN5x8PaI9
+    LuKwXmNjEW/e3Gx8mXdFYNgo0MGw5/TeUHyzXel2plGtjy/EcTNx7SO+tSB3J61F
+    lbk5mg6nzZxLcyc53zw7MfXqoyabTNKp215u8COBhaOKKZesLSG+kHFuMBGhN79c
+    REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+    2oz92PrCflb7P7eGuRrlHsMQCKjdW7CiawuQUieSsV52fY6XzkL5dweE7Jb3N5Ww
+    PUqnsCGxzdOEdbdM0UXgPIkVkNb/EgH9MdNzmAcxNC9N6C0dXDgdHqmE9YMaITE3
+    hypQ+cIQjdq/5OLJpV7hyzsNdiYldGJqfCT1PfXyYCmQOAy9hQ502tPkoTuhKgdB
+    +qZTbauGbxo0IwKDnZmP3f8F6HohKw3Mo0kDH8VTEacah56bX0ujEK/e73z1fsyp
+    T5qmfBb6CQj/VK20iKPV
+    -----END CERTIFICATE-----
   descriptor_name: "tap-1.0.0-full"
-  enable_automatic_dependency_updates: true
+  enable_automatic_dependency_updates: false
 supply_chain: basic
 
 contour:
@@ -192,39 +223,39 @@ contour:
       type: LoadBalancer
 
 cnrs:
-  domain_name: tap.yourDomain.com
+  domain_name: "tap.buildmodernapps.com"
   
 ootb_supply_chain_basic:
   registry:
-    server: "your-registry.yourDomain.com"
+    server: "private-registry.com"
     repository: "tap-demo"
   git_ops:
-    ssh_secret: "git-ssh"
+    ssh_secret: ""
   cluster_builder: default
   service_account: default
 
 learningcenter:
-  ingressDomain: "tap.yourDomain.com"
+  ingressDomain: "tap.buildmodernapps.com"
 
 tap_gui:
   service_type: LoadBalancer
   ingressEnabled: "true"
-  ingressDomain: "tap.yourDomain.com"
+  ingressDomain: "tap.buildmodernapps.com"
   app_config:
     app:
-      baseUrl: http://tap-gui.tap.yourDomain.com:7000
+      baseUrl: http://tap-gui.tap.buildmodernapps.com:7000
     integrations:
       github: # Other integrations available see official docs 
         - host: github.com
-          token: ""
+          token: "xxxxxxxtokenxxxxxx"
     catalog:
       locations:
         - type: url
-          target: https://github.com/your-gitscm-username/your-catalog-repo/blob/main/catalog-info.yaml # Replace this
+          target: https://github.com/jrobinsonvm/tap-latest-demo-catalog/blob/main/catalog-info.yaml # Replace this
     backend:
-      baseUrl: http://tap-gui.tap.yourDomain.com:7000
+      baseUrl: http://tap-gui.tap.buildmodernapps.com:7000
       cors:
-        origin: http://tap-gui.tap.yourDomain.com:7000
+        origin: http://tap-gui.tap.buildmodernapps.com:7000
 
 metadata_store:
   app_service_type: LoadBalancer # (optional) Defaults to LoadBalancer. Change to NodePort for distributions that don't support LoadBalancer
@@ -232,7 +263,6 @@ metadata_store:
 grype:
   namespace: "default" # (optional) Defaults to default namespace.
   targetImagePullSecret: "tap-registry"
-
 ```
 
 
