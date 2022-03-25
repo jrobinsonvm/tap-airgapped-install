@@ -80,9 +80,11 @@ export TBS_DEPENDENCY_VERSION=100.0.283
 ### Ensure you are logged into both your private registry and the Tanzu Network Registry.  
 
 ```
-docker login ${INSTALL_REGISTRY_HOSTNAME}
+docker login  ${INSTALL_REGISTRY_HOSTNAME} -u ${INSTALL_REGISTRY_USERNAME} -p ${INSTALL_REGISTRY_PASSWORD}
 
-docker login ${tanzunet_registry} 
+
+docker login ${tanzunet_registry} -u ${tanzunet_username} -p ${tanzunet_password}
+
 ```
 
 
