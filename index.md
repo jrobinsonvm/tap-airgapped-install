@@ -1,4 +1,4 @@
-## Tanzu Application Platform - UnOfficial AirGapped Install Guide  
+## Tanzu Application Platform - Unofficial AirGapped Install Guide  
 ### Quick & Dirty - Getting Started Guide
 
 VMware Tanzu Application Platform is a modular, application-aware platform that provides a rich set of developer tooling and a prepaved path to production to build and deploy software quickly and securely on any compliant public cloud or on-premises Kubernetes cluster.
