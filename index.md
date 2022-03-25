@@ -73,6 +73,7 @@ export TAP_VERSION=1.0.2
 export tanzunet_username=username
 export tanzunet_password=password
 export tanzunet_registry=registry.tanzu.vmware.com
+export TBS_DEPENDENCY_VERSION=100.0.283
 
 ```
 
@@ -175,7 +176,7 @@ kubectl create secret generic git-ssh     --from-file=./id_rsa     --from-file=.
 profile: full
 ceip_policy_disclosed: true # The value must be true for installation to succeed
 buildservice:
-  kp_default_repository: "private-registry.com/tap/build-service-airgapped"
+  kp_default_repository: "your-private-registry.com/tap/build-service"
   kp_default_repository_username: "username"
   kp_default_repository_password: "xxxxxxxxxxx"
   ca_cert_data: |
@@ -223,27 +224,27 @@ contour:
       type: LoadBalancer
 
 cnrs:
-  domain_name: "tap.buildmodernapps.com"
+  domain_name: "tap.yourdomain.com"
   
 ootb_supply_chain_basic:
   registry:
-    server: "private-registry.com"
+    server: "your-private-registry.com"
     repository: "tap-demo"
   git_ops:
-    ssh_secret: ""
+    ssh_secret: "git-ssh"
   cluster_builder: default
   service_account: default
 
 learningcenter:
-  ingressDomain: "tap.buildmodernapps.com"
+  ingressDomain: "tap.yourdomain.com"
 
 tap_gui:
   service_type: LoadBalancer
   ingressEnabled: "true"
-  ingressDomain: "tap.buildmodernapps.com"
+  ingressDomain: "tap.yourdomain.com"
   app_config:
     app:
-      baseUrl: http://tap-gui.tap.buildmodernapps.com:7000
+      baseUrl: http://tap-gui.tap.yourdomain.com:7000
     integrations:
       github: # Other integrations available see official docs 
         - host: github.com
@@ -253,9 +254,9 @@ tap_gui:
         - type: url
           target: https://github.com/jrobinsonvm/tap-latest-demo-catalog/blob/main/catalog-info.yaml # Replace this
     backend:
-      baseUrl: http://tap-gui.tap.buildmodernapps.com:7000
+      baseUrl: http://tap-gui.tap.yourdomain.com:7000
       cors:
-        origin: http://tap-gui.tap.buildmodernapps.com:7000
+        origin: http://tap-gui.tap.yourdomain.com:7000
 
 metadata_store:
   app_service_type: LoadBalancer # (optional) Defaults to LoadBalancer. Change to NodePort for distributions that don't support LoadBalancer
@@ -286,19 +287,7 @@ tanzu package installed update tap \
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
-## Install AirGapped TBS 
-
-### Set up environment variables for use during the installation.
-
-```
-export INSTALL_REGISTRY_HOSTNAME=<IMAGE-REGISTRY>
-export INSTALL_REPOSITORY=<IMAGE-REPOSITORY>
-export INSTALL_REGISTRY_USERNAME=<REGISTRY-USERNAME>
-export INSTALL_REGISTRY_PASSWORD=<REGISTRY-PASSWORD>
-export TBS_VERSION=1.4.3
-```
-
-
+## Install AirGapped TBS Dependencies 
 
 ###  Relocate Images to a Registry (Air-Gapped)
 
@@ -307,127 +296,86 @@ export TBS_VERSION=1.4.3
 docker login registry.tanzu.vmware.com
 ```
 
-#### Now package images as a tarball 
-```
-imgpkg copy -b registry.tanzu.vmware.com/build-service/package-repo:$TBS_VERSION --to-tar=/tmp/tanzu-build-service.tar
-```
-
-
-#### Login to your private registry 
+#### Now Login to your private registry 
 ```
 docker login ${INSTALL_REGISTRY_HOSTNAME}
 ```
 
-#### Copy the images from your local machine to the internal registry 
+
+#### Please see the Tanzu Network to select the latest TBS Dependencies Version
+#### This will ensure all images are up to date and free of critical vulnerabilities 
+
+https://network.tanzu.vmware.com/products/tbs-dependencies/
+
+#### The following example will use the 100.0.283 verison 
+#### This command will package the image bundle as a tarball 
+
+<br/>
 
 ```
-imgpkg copy --tar /tmp/tanzu-build-service.tar \
-  --to-repo=${INSTALL_REPOSITORY} \
-  --registry-ca-cert-path <PATH-TO-CA>
+ imgpkg copy -b registry.tanzu.vmware.com/tbs-dependencies/full:${TBS_DEPENDENCY_VERSION} \
+   --to-tar=tbs-dependencies.tar
 ```
 
-#### Now create a namespace for TBS Airgapped Install 
-
+#### Now let's upload the tarball contents to your private airgapped image registry.   
 ```
-kubectl create ns tbs-install
-```
-
-#### Add the TBS Repository 
-```
-tanzu package repository add tbs-repository \
-   --url "${INSTALL_REPOSITORY}:${TBS_VERSION}" \
-   --namespace tbs-install
-```
-
-#### Run the following command to verify 
-
-```
-tanzu package repository get tbs-repository --namespace tbs-install
-```
-
-
-#### Create a tbs-values.yml file with the following contents 
-
-```
----
-kp_default_repository: $INSTALL_REPOSITORY
-kp_default_repository_username: $INSTALL_REGISTRY_USERNAME
-kp_default_repository_password: $INSTALL_REGISTRY_PASSWORD
-pull_from_kp_default_repo: true
-ca_cert_data: <CA_CERT_CONTENTS>
-```
-
-#### Run the following command to install TBS.   
-```
-tanzu package install tbs -p buildservice.tanzu.vmware.com -v $TBS_VERSION -n tbs-install -f tbs-values.yml
-```
-
-
-#### Now run the following command to package tbs-dependencies as a tarball
-```
-docker login registry.tanzu.vmware.com
-
-imgpkg copy -b registry.tanzu.vmware.com/tbs-dependencies/full:100.0.282 \
-  --to-tar=tbs-dependencies.tar
-
-```
-
-#### Now push the tarball bundle to your private registry 
-
-```
-docker login <build-service-registry>
-
 imgpkg copy --tar=tbs-dependencies.tar \
-  --to-repo $INSTALL_REPOSITORY
+   --to-repo ${INSTALL_REGISTRY_HOSTNAME}/tap/build-service --registry-verify-certs=false
+```
+
+#### Now that dependencies are relocated to the internal registry, you can use the following commands to update the necessary resources:
+
+```
+ imgpkg pull -b ${INSTALL_REGISTRY_HOSTNAME}/tap/build-service:${TBS_DEPENDENCY_VERSION} \
+   -o /tmp/descriptor-bundle --registry-verify-certs=false
+```
+
+#### Create a KP secret for your airgapped private registry 
+
+```
+kp secret create registry-credentials --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME}
+```
+
+```
+kp secret create registry-credentials --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME} -n tap-install
 ```
 
 
-#### Finally let's install our tbs-dependencies  
+
+#### Copy the images from your local machine to the airgapped registry 
 
 ```
-imgpkg pull -b $INSTALL_REPOSITORY:1.4.3 \
-  -o /tmp/descriptor-bundle \
-  --registry-ca-cert-path <PATH-TO-CA>
+ kbld -f /tmp/descriptor-bundle/.imgpkg/images.yml \
+   -f /tmp/descriptor-bundle/tanzu.descriptor.v1alpha3/descriptor-${TBS_DEPENDENCY_VERSION}.yaml \
+   | kp import -f - --registry-verify-certs=false
 ```
 
-#### From your machine navigate to the 1.4.3.yaml file and change the image listed to match your private harbor image url.  
-```
-File location: /tmp/descriptor-bundle/packages/buildservice.tanzu.vmware.com/1.4.3.yml
-```
+<br/>
 
-#### You will also need to chanage the API Version to match the following 
-```
-apiVersion: kp.kpack.io/v1alpha1
-```
+<br/>
 
-#### Save the file.   
-
-```
-kbld -f /tmp/descriptor-bundle/.imgpkg/images.yml \
-  -f /tmp/descriptor-bundle/packages/buildservice.tanzu.vmware.com/1.4.3.yml \
-  | kp import -f -
-```
-
+----
 
 ## Before running any workloads you will need to setup a developer namespace.   
 
 ### Create the namespace if its not already created 
 
-```
+<!-- ```
 kubectl create ns dev-namespace-1
-```
+``` 
 
 
 ### Create a kubernetes secret for the registry you wish to use with your developer namespace.   
 
 ```
-kubectl create secret docker-registry registry-credentials --docker-server=your-registry.yourdomain.com --docker-username=username --docker-password=YourPassword -n dev-namespace-1
+kubectl create secret docker-registry registry-credentials --docker-server=${INSTALL_REGISTRY_HOSTNAME} --docker-username=${INSTALL_REGISTRY_USERNAME} --docker-password=${INSTALL_REGISTRY_PASSWORD} 
 ```
+-->
 
 
 ### Run the following to setup proper roles and service account permissions 
 ```
-cat <<EOF | kubectl -n dev-namespace-1 apply -f -
+cat <<EOF | kubectl -n default apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
@@ -572,7 +520,7 @@ tanzu apps workload list
 ```
 tanzu package installed update tap \
  --package-name tap.tanzu.vmware.com \
- --version 1.0.1 -n tap-install \
+ --version 1.0.2 -n tap-install \
  -f tap-values.yml
  ```
  
