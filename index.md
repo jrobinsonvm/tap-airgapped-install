@@ -141,7 +141,7 @@ tanzu secret registry add tap-registry \
 ### Add the Tanzu Application Platform Repository using the Tanzu CLI 
 ```
   tanzu package repository add tanzu-tap-repository \
-  --url your-registry.yourdomain.com/tap/tap-packages:$TAP_VERSION \
+  --url ${INSTALL_REGISTRY_HOSTNAME}/tap/tap-packages:$TAP_VERSION \
   --namespace tap-install
 ```
 
