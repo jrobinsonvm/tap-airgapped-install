@@ -333,13 +333,14 @@ imgpkg copy --tar=tbs-dependencies.tar \
 ```
 
 #### Create a KP secret for your airgapped private registry 
+##### In the example I'm using the default namespace as my developer namespace.   Use ' -n namespace-name ' to create the secrets in your developer namespace.   
 
 ```
 kp secret create registry-credentials --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME}
 ```
 
 ```
-kp secret create registry-credentials --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME} -n tap-install
+kp secret create tap-registry --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME}
 ```
 
 
