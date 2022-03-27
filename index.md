@@ -74,7 +74,7 @@ export tanzunet_username=username
 export tanzunet_password=password
 export tanzunet_registry=registry.tanzu.vmware.com
 export TBS_DEPENDENCY_VERSION=100.0.283
-
+export REGISTRY_PASSWORD=${INSTALL_REGISTRY_PASSWORD} 
 ```
 
 ### Ensure you are logged into both your private registry and the Tanzu Network Registry.  
