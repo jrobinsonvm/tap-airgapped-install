@@ -338,14 +338,10 @@ imgpkg copy --tar=tbs-dependencies.tar \
 ```
 kp secret create registry-credentials --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME}
 
-kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "registry-credentials"}]}'
-
 ```
 
 ```
 kp secret create tap-registry --registry ${INSTALL_REGISTRY_HOSTNAME} --registry-user ${INSTALL_REGISTRY_USERNAME}
-
-kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "tap-registry"}]}'
 
 ```
 
