@@ -361,9 +361,8 @@ kp secret create tap-registry --registry ${INSTALL_REGISTRY_HOSTNAME} --registry
 
 ----
 
-## Before running any workloads you will need to setup a developer namespace.   
-
-### Create the namespace if its not already created 
+## Before running any workloads you will need to setup permissions for your developer namespace.
+### As discussed earlier, we are using the default namespace as our developer namespce for this example.   
 
 <!-- ```
 kubectl create ns dev-namespace-1
