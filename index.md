@@ -464,11 +464,280 @@ EOF
 ```
 
 
-### Now you are ready to run some workloads
+----
+
+<br/>
+<br/>
+<br/>
+
+## For current versions of TAP (1.0.2) and earlier we will need to implement a temporary work around to ensure your private registry's CA Certificate is replicated to the appropriate TAP components.  
 
 <br/>
 
-#### But first take a look at the Supply Chain you will be using.
+### Create a file called conventions-overlay.yaml with the following content.   
+#### Ensure to replace the certificate with the CA Certifciate from your private registry.   
+
+```
+#@ load("@ytt:overlay", "overlay")
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patch-convention-controller-ca-cert
+  namespace: tap-install
+stringData:
+  patch.yaml: |
+    #@ load("@ytt:overlay", "overlay")
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ca-cert
+      namespace: conventions-system
+    data:
+      custom-ca.crt: |
+                -----BEGIN CERTIFICATE-----
+                MIIF2zCCA8OgAwIBAgIUFx8Okxpb45EjI8owci2kQkdGPEwwDQYJKoZIhvcNAQEN
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                MQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAwBgNVBAMMKW5vc3NsLmhh
+                cmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29tMB4XDTIyMDMwODE0MzU0
+                NVoXDTMyMDMwNTE0MzU0NVowfTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk5DMRAw
+                DgYDVQQHDAdSYWxlaWdoMQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAw
+                BgNVBAMMKW5vc3NsLmhhcmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29t
+                MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAw3Eaetb6AdjzDyUDJD7S
+                HmAjsU9kaPln9HPHzNCLQRuYu6P1KGjtchfqeYfFGYVS+BHFBfTNHrOr1ixiTUjB
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                mz2EuatgF+HL9f3hib7Kb7EdR38J0qA0UbJFvFIRG6JwUhBAoA8ALgEPXFjpssa7
+                ac4N47jJQNPafWgdm164E7b3oMbcti1uKquMrzZyX+nFnUURhFqyO/GYIga4nbsp
+                IEikHs3sXHSCVlAB7wqVaLE1fmAkrgtimRk0TWfdA4flMjadxS29HKaMMFCLMiXh
+                BM0rakQeVs1AYWc8H5gNnHxzXvft6pGiBTsZtj9W8DcjmibMA8P9O0hDzF3yF+08
+                qNb75/wEwfQBW4E/5ifAxgYj8DZ/3n+eeNmlWZphEWfqeppzenbW7qk/3O5Kts17
+                SfLy7AoWzYCudw4rUG0cLoqIihgz+xqL/EYTb/Puvk2/3eiUGJ/q67+4h8AqaLwZ
+                67JJkZXbAeU9j/C+mgjnBlk9Qv62ye9iZJIGnG5kPIzMz/pp0iz+toWCABLhIAJj
+                uvEFW7RIitqM2Mn5U7Ue2hOSqb5qpV3TnQXJ6RVq1CxxO3lSw4AvFGa87GxV5EBA
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                IIVkc1x8iJ0oMB8GA1UdIwQYMBaAFIQVhH/MATwbOWk5IIVkc1x8iJ0oMA8GA1Ud
+                EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQENBQADggIBAGEZ6JqzCByT5mbG8sRxDvEe
+                9A6kbDlNtBwMlxekReLG/NMR8xpWB0DtTdbVcpdDgZ7Sw8MZKWdgWtQU2OHiIioT
+                Ffczar0AcakYVCOCy3XLSm1+SFJYbd7VNw05hfQo4o7iZynamztoXOToQTinMQVw
+                gCiJebDy1EJnZwmPfVwKpjt1lEUKbCT9R+lnFgP2be58kGKbMI2l5/wYN5x8PaI9
+                LuKwXmNjEW/e3Gx8mXdFYNgo0MGw5/TeUHyzXel2plGtjy/EcTNx7SO+tSB3J61F
+                lbk5mg6nzZxLcyc53zw7MfXqoyabTNKp215u8COBhaOKKZesLSG+kHFuMBGhN79c
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                2oz92PrCflb7P7eGuRrlHsMQCKjdW7CiawuQUieSsV52fY6XzkL5dweE7Jb3N5Ww
+                -----END CERTIFICATE-----
+
+
+    #@overlay/match by=overlay.subset({"kind":"Deployment","metadata":{"name":"conventions-controller-manager"}})
+    ---
+    spec:
+      template:
+        spec:
+          containers:
+          #@overlay/match by=overlay.subset({"name": "manager"})
+          - volumeMounts:
+            #@overlay/append
+            - name: ca-cert
+              mountPath: /etc/ssl/certs/custom-ca.crt
+              subPath: custom-ca.crt
+          volumes:
+          #@overlay/append
+          - name: ca-cert
+            configMap:
+              name: ca-cert
+
+#@overlay/match by=overlay.subset({"kind":"PackageInstall","metadata":{"name":"conventions-controller"}})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    ext.packaging.carvel.dev/ytt-paths-from-secret-name.0: patch-convention-controller-ca-cert
+
+```
+
+<br/>
+<br/>
+
+### Create a file called ootb-config-writer-overlay.yaml with the following content.   
+#### Ensure to replace the certificate with the CA Certifciate from your private registry.   
+
+```
+
+#@ load("@ytt:overlay", "overlay")
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patch-ootb-templates
+  namespace: tap-install
+stringData:
+  patch.yaml: |
+    #@ load("@ytt:overlay", "overlay")
+
+    #@ def inject_ca_cert(left, right):
+    #@ return left.replace("set -o xtrace", "set -o xtrace\n\ncat >/etc/ssl/certs/custom-ca.crt <<EOF\n" + right + "\nEOF")
+    #@ end
+
+    #@overlay/match by=overlay.subset({"kind":"ClusterTask","metadata":{"name":"image-writer"}})
+    ---
+    spec:
+      steps:
+      #@overlay/match by=overlay.all
+      -
+        #@overlay/replace via=inject_ca_cert
+        script: |
+                -----BEGIN CERTIFICATE-----
+                MIIF2zCCA8OgAwIBAgIUFx8Okxpb45EjI8owci2kQkdGPEwwDQYJKoZIhvcNAQEN
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                MQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAwBgNVBAMMKW5vc3NsLmhh
+                cmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29tMB4XDTIyMDMwODE0MzU0
+                NVoXDTMyMDMwNTE0MzU0NVowfTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk5DMRAw
+                DgYDVQQHDAdSYWxlaWdoMQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAw
+                BgNVBAMMKW5vc3NsLmhhcmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29t
+                MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAw3Eaetb6AdjzDyUDJD7S
+                HmAjsU9kaPln9HPHzNCLQRuYu6P1KGjtchfqeYfFGYVS+BHFBfTNHrOr1ixiTUjB
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                mz2EuatgF+HL9f3hib7Kb7EdR38J0qA0UbJFvFIRG6JwUhBAoA8ALgEPXFjpssa7
+                ac4N47jJQNPafWgdm164E7b3oMbcti1uKquMrzZyX+nFnUURhFqyO/GYIga4nbsp
+                IEikHs3sXHSCVlAB7wqVaLE1fmAkrgtimRk0TWfdA4flMjadxS29HKaMMFCLMiXh
+                BM0rakQeVs1AYWc8H5gNnHxzXvft6pGiBTsZtj9W8DcjmibMA8P9O0hDzF3yF+08
+                qNb75/wEwfQBW4E/5ifAxgYj8DZ/3n+eeNmlWZphEWfqeppzenbW7qk/3O5Kts17
+                SfLy7AoWzYCudw4rUG0cLoqIihgz+xqL/EYTb/Puvk2/3eiUGJ/q67+4h8AqaLwZ
+                67JJkZXbAeU9j/C+mgjnBlk9Qv62ye9iZJIGnG5kPIzMz/pp0iz+toWCABLhIAJj
+                uvEFW7RIitqM2Mn5U7Ue2hOSqb5qpV3TnQXJ6RVq1CxxO3lSw4AvFGa87GxV5EBA
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                IIVkc1x8iJ0oMB8GA1UdIwQYMBaAFIQVhH/MATwbOWk5IIVkc1x8iJ0oMA8GA1Ud
+                EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQENBQADggIBAGEZ6JqzCByT5mbG8sRxDvEe
+                9A6kbDlNtBwMlxekReLG/NMR8xpWB0DtTdbVcpdDgZ7Sw8MZKWdgWtQU2OHiIioT
+                Ffczar0AcakYVCOCy3XLSm1+SFJYbd7VNw05hfQo4o7iZynamztoXOToQTinMQVw
+                gCiJebDy1EJnZwmPfVwKpjt1lEUKbCT9R+lnFgP2be58kGKbMI2l5/wYN5x8PaI9
+                LuKwXmNjEW/e3Gx8mXdFYNgo0MGw5/TeUHyzXel2plGtjy/EcTNx7SO+tSB3J61F
+                lbk5mg6nzZxLcyc53zw7MfXqoyabTNKp215u8COBhaOKKZesLSG+kHFuMBGhN79c
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                -----END CERTIFICATE-----
+
+#@overlay/match by=overlay.subset({"kind":"PackageInstall","metadata":{"name":"ootb-templates"}})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    ext.packaging.carvel.dev/ytt-paths-from-secret-name.0: patch-ootb-templates
+
+```
+
+### Create a file called sources-overlay.yaml with the following content.   
+#### Ensure to replace the certificate with the CA Certifciate from your private registry.   
+
+```
+
+#@ load("@ytt:overlay", "overlay")
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: patch-source-controller-ca-cert
+  namespace: tap-install
+stringData:
+  patch.yaml: |
+    #@ load("@ytt:overlay", "overlay")
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: ca-cert
+      namespace: source-system
+    data:
+      custom-ca.crt: |
+                -----BEGIN CERTIFICATE-----
+                MIIF2zCCA8OgAwIBAgIUFx8Okxpb45EjI8owci2kQkdGPEwwDQYJKoZIhvcNAQEN
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                MQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAwBgNVBAMMKW5vc3NsLmhh
+                cmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29tMB4XDTIyMDMwODE0MzU0
+                NVoXDTMyMDMwNTE0MzU0NVowfTELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAk5DMRAw
+                DgYDVQQHDAdSYWxlaWdoMQ4wDAYDVQQKDAVTYWxlczELMAkGA1UECwwCU0UxMjAw
+                BgNVBAMMKW5vc3NsLmhhcmJvci5yZWdpc3RyeS5idWlsZG1vZGVybmFwcHMuY29t
+                MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAw3Eaetb6AdjzDyUDJD7S
+                HmAjsU9kaPln9HPHzNCLQRuYu6P1KGjtchfqeYfFGYVS+BHFBfTNHrOr1ixiTUjB
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                mz2EuatgF+HL9f3hib7Kb7EdR38J0qA0UbJFvFIRG6JwUhBAoA8ALgEPXFjpssa7
+                ac4N47jJQNPafWgdm164E7b3oMbcti1uKquMrzZyX+nFnUURhFqyO/GYIga4nbsp
+                IEikHs3sXHSCVlAB7wqVaLE1fmAkrgtimRk0TWfdA4flMjadxS29HKaMMFCLMiXh
+                BM0rakQeVs1AYWc8H5gNnHxzXvft6pGiBTsZtj9W8DcjmibMA8P9O0hDzF3yF+08
+                qNb75/wEwfQBW4E/5ifAxgYj8DZ/3n+eeNmlWZphEWfqeppzenbW7qk/3O5Kts17
+                SfLy7AoWzYCudw4rUG0cLoqIihgz+xqL/EYTb/Puvk2/3eiUGJ/q67+4h8AqaLwZ
+                67JJkZXbAeU9j/C+mgjnBlk9Qv62ye9iZJIGnG5kPIzMz/pp0iz+toWCABLhIAJj
+                uvEFW7RIitqM2Mn5U7Ue2hOSqb5qpV3TnQXJ6RVq1CxxO3lSw4AvFGa87GxV5EBA
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                IIVkc1x8iJ0oMB8GA1UdIwQYMBaAFIQVhH/MATwbOWk5IIVkc1x8iJ0oMA8GA1Ud
+                EwEB/wQFMAMBAf8wDQYJKoZIhvcNAQENBQADggIBAGEZ6JqzCByT5mbG8sRxDvEe
+                9A6kbDlNtBwMlxekReLG/NMR8xpWB0DtTdbVcpdDgZ7Sw8MZKWdgWtQU2OHiIioT
+                Ffczar0AcakYVCOCy3XLSm1+SFJYbd7VNw05hfQo4o7iZynamztoXOToQTinMQVw
+                gCiJebDy1EJnZwmPfVwKpjt1lEUKbCT9R+lnFgP2be58kGKbMI2l5/wYN5x8PaI9
+                LuKwXmNjEW/e3Gx8mXdFYNgo0MGw5/TeUHyzXel2plGtjy/EcTNx7SO+tSB3J61F
+                lbk5mg6nzZxLcyc53zw7MfXqoyabTNKp215u8COBhaOKKZesLSG+kHFuMBGhN79c
+                REDACTED    REDACTED    REDACTED    REDACTED    REDACTED
+                -----END CERTIFICATE-----
+
+
+    #@overlay/match by=overlay.subset({"kind":"Deployment","metadata":{"name":"source-controller-manager"}})
+    ---
+    spec:
+      template:
+        spec:
+          containers:
+          #@overlay/match by=overlay.subset({"name": "manager"})
+          - volumeMounts:
+            #@overlay/append
+            - name: ca-cert
+              mountPath: /etc/ssl/certs/custom-ca.crt
+              subPath: custom-ca.crt
+          volumes:
+          #@overlay/append
+          - name: ca-cert
+            configMap:
+              name: ca-cert
+
+#@overlay/match by=overlay.subset({"kind":"PackageInstall","metadata":{"name":"source-controller"}})
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    ext.packaging.carvel.dev/ytt-paths-from-secret-name.2: patch-source-controller-ca-cert
+
+```
+
+### Now run the following lines to create several kubernetes secrets with your private registry's CA Certificate.    You will then run a patch command to add new annotations so that TAP is aware of the certificates.    
+
+```
+
+kubectl create secret generic -n tap-install convention-service-cert --from-file=./conventions-overlay.yaml
+
+
+kubectl create secret generic -n tap-install source-service-cert --from-file=./sources-overlay.yaml
+
+
+kubectl create secret generic -n tap-install ootb-templates-cert --from-file=./ootb-config-writer-overlay.yaml
+
+
+kubectl patch -n tap-install --type merge pkgi tap --patch '{"metadata":{"annotations":{"ext.packaging.carvel.dev/ytt-paths-from-secret-name.0": "convention-service-cert", "ext.packaging.carvel.dev/ytt-paths-from-secret-name.1":"ootb-templates-cert", "ext.packaging.carvel.dev/ytt-paths-from-secret-name.2": "source-service-cert"}}}'
+
+
+```
+
+
+
+
+<br/>
+
+
+## Now you are ready to run some workloads
+
+<br/>
+
+### But first take a look at the Supply Chain you will be using.
 ```
 tanzu apps cluster-supply-chain list
 ```
