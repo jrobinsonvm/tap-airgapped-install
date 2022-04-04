@@ -99,7 +99,7 @@ imgpkg copy -b registry.tanzu.vmware.com/tanzu-application-platform/tap-packages
 ### Once that tarball has been transferred to a device which has access to your private registry, push the tarball to your registry.  
 
 ```
-imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo your-registry.yourdomain.com/tap/tap-packages --registry-verify-certs=false
+imgpkg copy --tar /tmp/tap-imagebundle.tar --to-repo ${INSTALL_REGISTRY_HOSTNAME}/tap/tap-packages --registry-verify-certs=false
 ```
 
 
