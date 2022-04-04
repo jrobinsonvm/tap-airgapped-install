@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  # Name must be `kapp-controller-config` for kapp controller to pick it up
+  name: kapp-controller-config
+
+  # Namespace must match the namespace kapp-controller is deployed to
+  namespace: kapp-controller
+
+stringData:
+  # A cert chain of trusted ca certs. These will be added to the system-wide
+  # cert pool of trusted ca's (optional)
+  caCerts: |
+    -----BEGIN CERTIFICATE-----
+    MIIFxzCCA6+gAwIBAgIJALqRuf4HGdCHMA0GCSqGSIb3DQEBDQUAMHoxCzAJBgNV
+    BAYTAlVTMQswCQYDVQQIDAJOQzEQMA4GA1UEBwwHUmFsZWlnaDEOMAwGA1UECgwF
+    -------------------------------------REDACTED-------------------
+    LTUyNy5wZXoudm13YXJlLmNvbTAeFw0yMjA0MDQxNTA5NDlaFw0zMjA0MDExNTA5
+    NDlaMHoxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJOQzEQMA4GA1UEBwwHUmFsZWln
+    aDEOMAwGA1UECgwFVGFuenUxETAPBgNVBAsMCFBlcnNvbmFsMSkwJwYDVQQDDCBy
+    ZWdpc3RyeS5oYWFzLTUyNy5wZXoudm13YXJlLmNvbTCCAiIwDQYJKoZIhvcNAQEB
+    BQADggIPADCCAgoCggIBAKHKHpF0xtoGSEDNoxfmRgUp41REM+bUzZ9SPKnSPagr
+    -------------------------------------REDACTED-------------------
+    6kkANS3WU5fq8jNpJIjnnZWXYcex8/VAaizz3mN/bWR2vX+hQBzxhOySsd7qFIFa
+    qnzhsREkA6qTF4Se6x5y60Dlb7+qAsQPP4WwuoRde+GFJ5y1gvstBG9WeeBOQsnT
+    ek9hjrBZQMvaVn3CZEHoBX1qZqjJ1NJ9fk7VrAcFEp8xI3lF5EsJhcZ+qO4XT4hY
+    8vQ/0Of9RQVLp/KkPcOq0zltAKXInwcIkSDnLjGte2zPF26HeQg6lMgQ9P8tr9rQ
+    jCE4bzBckdcxMPBCIrX4Z569Yoi0WTapKekhhCphJe3q59SQHZGD3dMfE7pGMGuV
+    -------------------------------------REDACTED-------------------
+    4a9yBkWik3oWqfN4TsivSHOfcp5ioOlmQL+o3Ye07sUP4+xEBjzj+dsc9QRJBvL6
+    hflFVg5/dQndNv9u1EOhS6bmjMXqiSXFifoH2J9LhPC/jIoNLE31oPZnrMm9200m
+    Aa7kMUooTtvupXf7OsRO1UXwmfO73HN/ztG3qjh7Lv2b7eUv909LSF7vYo8JH49d
+    -------------------------------------REDACTED-------------------
+    GDAWgBSQZ2E2qQFlEjTZF/wlHoCxeDsItDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3
+    DQEBDQUAA4ICAQBQp55sQaQlFyiVfZZa6PGOSfmZ6XUjNnVU3bMe7xNO1RzyHD1a
+    -------------------------------------REDACTED-------------------
+    JaLdIWeFnGQrMiR2klLD2xaq6rJcMEocl9SRRVft9GXjMkg+tkZm3LN0SeQlocCP
+    dYZR4e/pLf98EpjxHMvU7739WA8xLuwaUzT9uA8AC4RBdt1mLg73oHbS4yQZ26PF
+    3kBk5V3WfnM16RJNLOSRCDIsmpvl8X6DuM3AlsPOyYNnM1Zg7/gx+w9iECAoXB6L
+    -------------------------------------REDACTED-------------------
+    hpdcKF2GGui6Fy+vElHZOsRSLbGEKktFoaf/X+3Q8D3AZo0KUTvsCLc2GyShQa1r
+    0P/l+Kr68c2w2OeG85eCOf+hTVMEWLOE3N9TnK2Tc8PBP7ajPXTzKpkZvGoqe9Y3
+    F2rFmuU2LwV+uIibGUxI9+QbxQlqnqA6vf4XDkEA1bcihuUNXhVr95U3DnhFSIxh
+    -------------------------------------REDACTED-------------------
+    bgBI+0mwZXhWqa2L4gpUIEgb1R4RAjTg+cQdLuz1CGa5YqYVS5ow0U4SJQ==
+    -----END CERTIFICATE-----
+
+  # The url/ip of a proxy for kapp controller to use when making network
+  # requests (optional)
+  #httpProxy: proxy-svc.proxy-server.svc.cluster.local:80
+
+
+  # The url/ip of a tls capable proxy for kapp controller to use when
+  # making network requests (optional)
+  #httpsProxy: ""
+
+  # A comma delimited list of domain names which kapp controller should
+  # bypass the proxy for when making requests (optional)
+  #noProxy: "github.com,docker.io"
+
+  # A comma delimited list of domain names for which kapp controller, when
+  # fetching images or imgpkgBundles, will skip TLS verification. (optional)
+  dangerousSkipTLSVerify: "registry.example.com:7443"
